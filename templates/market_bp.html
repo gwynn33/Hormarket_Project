@@ -1,0 +1,205 @@
+{% extends "base/base.html" %}
+{% block css_file %}
+    <link rel="stylesheet" href="/css/market_bp.css">
+{% endblock %}
+{% block title %} Hormarket {% endblock %}
+{% block content %}
+    <!-- Vidéo de fond -->
+    <video autoplay muted loop id="background-video">
+        <source src="/media/vid1.mp4" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Overlay du panier -->
+    <div class="cart-overlay" id="cart-overlay">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <div class="cart-modal-title">
+                    <span>🛒</span>
+                    Mon Panier
+                </div>
+                <button class="close-cart" id="close-cart">✕</button>
+            </div>
+            
+            <div class="cart-content">
+                <div class="cart-items-container" id="cart-items-large">
+                    <!-- Les articles du panier seront affichés ici -->
+                    <div class="empty-cart-large" id="empty-cart-large">
+                        Votre panier est vide. Ajoutez des produits pour commencer vos achats.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-total-large" id="cart-total-large" style="display: none;">
+                <span>Total:</span>
+                <span id="cart-total-amount-large">0 MAD</span>
+            </div>
+            
+            <button class="checkout-btn-large" id="checkout-btn-large" disabled>Confirmer l'achat</button>
+        </div>
+    </div>
+
+    <!-- Recu (Reçu) -->
+    <div class="receipt-overlay" id="receipt-overlay">
+        <div class="receipt" id="receipt">
+            <div class="receipt-header">
+                <div class="receipt-title">HorMarket</div>
+                <div class="receipt-date" id="receipt-date">15 Mars 2025</div>
+            </div>
+            
+            <div class="receipt-items" id="receipt-items">
+                <!-- Les articles achetés seront affichés ici -->
+            </div>
+            
+            <div class="receipt-total">
+                <span>Total:</span>
+                <span id="receipt-total">0 MAD</span>
+            </div>
+            
+            <div class="receipt-footer">
+                Merci pour votre achat!<br>
+                À bientôt chez HorMarket
+            </div>
+            
+            <button class="close-receipt" id="close-receipt">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Barre latérale compacte -->
+        <div class="sidebar">
+            <!-- En-tête de la barre latérale -->
+            <div class="sidebar-header">
+                <div class="logo">HM</div>
+                <div>
+                    <div class="store-name">HorMarket</div>
+                    <div class="year-badge">2025</div>
+                </div>
+            </div>
+
+            <!-- Section du panier -->
+            <div class="cart-section">
+                <div class="cart-header" id="cart-toggle">
+                    <div class="cart-icon-container">
+                        <div class="cart-icon">🛒</div>
+                        <div class="cart-indicator" id="cart-indicator">0</div>
+                    </div>
+                    <div class="cart-info">
+                        <div class="cart-title">Mon Panier</div>
+                        <div class="cart-count" id="cart-count">0 articles</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="main-content">
+            <!-- En-tête du contenu principal -->
+            <div class="main-header">
+                <h1 class="page-title" id="current-page-title">Nos Produits</h1>
+                
+                <div class="user-menu">
+                    <a href="#" class="commands-link" data-page="commandes">
+                        <span>📋</span>
+                        Mes Commandes
+                    </a>
+                    
+                    <div class="user-info-compact" id="user-menu-toggle">
+                        <div class="user-avatar-small"></div>
+                        <div class="user-details">
+                            <div class="user-name">{{ username }}</div>
+                            <div class="user-role">Client</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page des produits -->
+            <div class="page active" id="produits">
+                <div class="search-filter-bar">
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="search-input" placeholder="Rechercher un produit...">
+                        <button class="search-btn" id="search-btn">🔍</button>
+                    </div>
+                    
+                    <div class="filter-container">
+                        <div class="custom-select-wrapper">
+                            <select class="filter-select" id="category-filter">
+                                <option value="all">Toutes les catégories</option>
+                                <option value="Fruits">Fruits</option>
+                                <option value="Légumes">Légumes</option>
+                                <option value="Produits Laitiers">Produits Laitiers</option>
+                                <option value="Épicerie">Épicerie</option>
+                            </select>
+                            <div class="custom-arrow">▼</div>
+                        </div>
+                        
+                        <div class="custom-select-wrapper">
+                            <select class="filter-select" id="sort-filter">
+                                <option value="name">Trier par nom</option>
+                                <option value="price-asc">Prix croissant</option>
+                                <option value="price-desc">Prix décroissant</option>
+                                <option value="stock">Stock disponible</option>
+                            </select>
+                            <div class="custom-arrow">▼</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="products-container">
+                    <div class="product-card">
+                    <div class="product-image"><img src=""></div>
+                    <div class="product-name">x</div>
+                    <div class="product-description">y</div>
+                    <div class="product-price">0 MAD</div>
+                    <div class="product-stock">10</div>
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button class="quantity-btn minus" data-id="${product.product_id}">-</button>
+                            <input type="text" class="quantity-input" value="1" data-id="${product.product_id}">
+                            <button class="quantity-btn plus" data-id="${product.product_id}">+</button>
+                        </div>
+                        <button class="add-to-cart-btn" data-id="${product.product_id}" ${product.current_stock_quantity === 0 ? 'disabled' : ''}>
+                            ${product.current_stock_quantity === 0 ? 'Rupture' : 'Ajouter'}
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page des commandes -->
+            <div class="page" id="commandes">
+                <div class="commands-container">
+                    <h2 style="margin-bottom: 10px;">Historique de Mes Commandes</h2>
+                    <p style="color: var(--gris-tres-clair); margin-bottom: 20px;">Consultez l'état de toutes vos commandes passées</p>
+                    
+                    <table class="commands-table">
+                        <thead>
+                            <tr>
+                                <th>ID Commande</th>
+                                <th>Date</th>
+                                <th>Produit</th>
+                                <th>Quantité</th>
+                                <th>Prix Unitaire</th>
+                                <th>Total</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table">
+                            <!-- Les commandes seront chargées ici -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer>
+                HorMarket - Boutique en Ligne 2025 © 2025
+            </footer>
+        </div>
+    </div>
+
+    <script type="module" src="/js/market_bp.js"></script>
+
+{% endblock %}

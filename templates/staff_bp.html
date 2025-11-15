@@ -1,0 +1,176 @@
+{% extends "base/base.html" %}
+{% block css_file %}
+    <link rel="stylesheet" href="/css/staff_bp.css">
+{% endblock %}
+{% block title %} Staff Hub {% endblock %}
+{% block content %}
+    <!-- Background video -->
+    <video autoplay muted loop id="background-video">
+        <source src="/media/vid1.mp4" type="video/mp4">
+        Your browser does not support video.
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">HM</div>
+                <div class="store-name">{{username}} <span class="year-badge">2025</span></div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-section">
+                <h3 class="nav-title">Data Analysis 2025</h3>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-page="sort-products">Sort the products by price or stock</a></li>
+                    <li><a href="#" class="nav-link" data-page="stock-value">Total Stock Value</a></li>
+                    <li><a href="#" class="nav-link" data-page="category-chart">Category Analysis</a></li>
+                    <li><a href="{{url_for('logout_bp.logout')}}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            
+            <!-- PAGE 1: Sort Products -->
+            <div class="page active" id="sort-products">
+                <h2 class="page-title">Sort Products <span class="year-indicator">2025</span></h2>
+                <p style="color: #666; margin-bottom: 20px;">Data processed with Pandas & NumPy</p>
+    
+                <div class="chart-container">
+                    <h3 class="chart-title">Sort the products by price</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; background: black; margin-top: 20px;">
+                            <thead>
+                                <tr style="background: gray; color: whitesmoke;">
+                                    <th style="padding: 12px; text-align: left;">#</th>
+                                    <th style="padding: 12px; text-align: left;">Product</th>
+                                    <th style="padding: 12px; text-align: left;">Category</th>
+                                    <th style="padding: 12px; text-align: left;">Price (DH)</th>
+                                    <th style="padding: 12px; text-align: left;">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products_by_price %}
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 12px;">{{ loop.index }}</td>
+                                    <td style="padding: 12px; font-weight: bold;">{{ product.product_name }}</td>
+                                    <td style="padding: 12px;">{{ product.product_categorie }}</td>
+                                    <td style="padding: 12px; color: #4CAF50; font-weight: bold;">{{ product.product_price }} DH</td>
+                                    <td style="padding: 12px;">{{ product.current_stock_quantity }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-top: 40px;">
+                    <h3 class="chart-title">Sort the products by stock</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; background: black; margin-top: 20px;">
+                            <thead>
+                                <tr style="background: gray; color: white;">
+                                    <th style="padding: 12px; text-align: left;">#</th>
+                                    <th style="padding: 12px; text-align: left;">Product</th>
+                                    <th style="padding: 12px; text-align: left;">Category</th>
+                                    <th style="padding: 12px; text-align: left;">Stock</th>
+                                    <th style="padding: 12px; text-align: left;">Price (DH)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products_by_stock %}
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 12px;">{{ loop.index }}</td>
+                                    <td style="padding: 12px; font-weight: bold;">{{ product.product_name }}</td>
+                                    <td style="padding: 12px;">{{ product.product_categorie }}</td>
+                                    <td style="padding: 12px; color: #2196F3; font-weight: bold;">{{ product.current_stock_quantity }} units</td>
+                                    <td style="padding: 12px;">{{ product.product_price }} DH</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 2: Total Stock Value -->
+            <div class="page" id="stock-value">
+                <h2 class="page-title">Total Stock Value <span class="year-indicator">2025</span></h2>
+                <p style="color: #666; margin-bottom: 20px;">Calculated using NumPy aggregations</p>
+                
+                <div class="chart-container">
+                    <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #313236 0%, #b9b5bd 100%); border-radius: 10px; color: white; margin-bottom: 30px;">
+                        <div style="font-size: 18px; opacity: 0.9; margin-bottom: 10px;">TOTAL INVENTORY VALUE</div>
+                        <div style="font-size: 64px; font-weight: bold; margin: 20px 0;">{{ "%.2f"|format(total_stock_value) }} DH</div>
+                        <div style="font-size: 16px; opacity: 0.8;">{{ products_with_value|length }} products analyzed</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">Detailed Breakdown</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; background: black; margin-top: 20px;">
+                            <thead>
+                                <tr style="background: gray; color: white;">
+                                    <th style="padding: 12px; text-align: left;">Product</th>
+                                    <th style="padding: 12px; text-align: left;">Category</th>
+                                    <th style="padding: 12px; text-align: center;">Price</th>
+                                    <th style="padding: 12px; text-align: center;">Stock</th>
+                                    <th style="padding: 12px; text-align: center;">Total Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products_with_value %}
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="padding: 12px; font-weight: bold;">{{ product.product_name }}</td>
+                                    <td style="padding: 12px;">{{ product.product_categorie }}</td>
+                                    <td style="padding: 12px; text-align: center;">{{ product.product_price }} DH</td>
+                                    <td style="padding: 12px; text-align: center;">{{ product.current_stock_quantity }}</td>
+                                    <td style="padding: 12px; text-align: center; font-weight: bold; color: #9C27B0;">
+                                        {{ "%.2f"|format(product.total_value) }} DH
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 3: Category Charts -->
+            <div class="page" id="category-chart">
+                <h2 class="page-title">Stock by Category <span class="year-indicator">2025</span></h2>
+                <p style="color: #666; margin-bottom: 20px;">Data visualized by Chartjs</p>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Bar Chart</h3>
+                    <canvas id="barChart" style="max-height: 400px; margin-top: 20px;"></canvas>
+                </div>
+
+                <!-- <div class="chart-container" style="margin-top: 40px;">
+                    <h3 class="chart-title">🥧 Pie Chart</h3>
+                    <canvas id="pieChart" style="max-height: 400px; margin-top: 20px;"></canvas>
+                </div> -->
+
+                <!-- OPTIONNEL: Container pour matplotlib -->
+                <div class="chart-container" style="margin-top: 40px; display: none;">
+                    <h3 class="chart-title">📈 Matplotlib Generated Chart</h3>
+                    <div id="matplotlib-container"></div>
+                </div>
+            </div>
+
+            <footer>
+                HorMarket - Data Analysis System 2025 © 2025
+            </footer>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Ton JS externe -->
+    <script type="module" src="/js/staff_bp.js"></script>
+{% endblock %}
